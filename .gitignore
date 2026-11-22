@@ -1,0 +1,24 @@
+# Visual Studio
+.vs/
+*.user
+*.aps
+*.ncb
+*.suo
+
+# Build output
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+Win32/
+*.obj
+*.pch
+*.ipch
+*.ilk
+*.exp
+*.log
+*.tlog
+
+# Keep the Detours libraries
+!vendor/detours/x64/
+!vendor/detours/x86/

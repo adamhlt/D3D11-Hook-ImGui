@@ -1,59 +1,66 @@
-```
-            ____ _____ ____ ______   __  __            __      ____          ______      _ 
-           / __ \__  // __ <  <  /  / / / /___  ____  / /__   /  _/___ ___  / ____/_  __(_)
-          / / / //_ </ / / / // /  / /_/ / __ \/ __ \/ //_/   / // __ `__ \/ / __/ / / / / 
-         / /_/ /__/ / /_/ / // /  / __  / /_/ / /_/ / ,<    _/ // / / / / / /_/ / /_/ / /
-        /_____/____/_____/_//_/  /_/ /_/\____/\____/_/|_|  /___/_/ /_/ /_/\____/\__,_/_/
-                                                                       
-                                                                      
-                           D3D11 Hook with ImGui integration (x86 / x64)
-                                Make D3D11 internal menu with ImGui
-                                   (Resize & Fullscreen support)
-```
-<p align="center">
-    <img src="https://img.shields.io/badge/language-C%2B%2B-%23f34b7d.svg?style=for-the-badge&logo=appveyor" alt="C++">
-    <img src="https://img.shields.io/badge/platform-Windows-0078d7.svg?style=for-the-badge&logo=appveyor" alt="Windows">
-    <img src="https://img.shields.io/badge/arch-x86-red.svg?style=for-the-badge&logo=appveyor" alt="x86">
-    <img src="https://img.shields.io/badge/arch-x64-green.svg?style=for-the-badge&logo=appveyor" alt="x64">
-</p>
+<div align="center">
 
-## :open_book: Project Overview :
+# D3D11 Hook ImGui
 
-D3D11 Hook with [ImGui](https://github.com/ocornut/imgui) integration written in C++, works on x86 and x64 with all librairies and includes.
+**D3D11 hook in C++ (x86 / x64) to draw an ImGui menu inside a DirectX 11 process**
 
-#### Features :
+![Language](https://img.shields.io/badge/C%2B%2B-16171C?logo=cplusplus)
+![Platform](https://img.shields.io/badge/Windows-16171C)
+![Arch](https://img.shields.io/badge/x86%20%7C%20x64-16171C)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-16171C)](LICENSE)
 
-- Handle window resize
-- DLL unload itself
-- Handler external unload
-- Handle fullscreen change
+</div>
 
-#### Used librairies :
+---
 
-- [MS Detours](https://www.microsoft.com/en-us/research/project/detours/)
-- [DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
+D3D11 Hook ImGui is a DLL that hooks the DirectX 11 swap chain of the process it is loaded in, and renders an [ImGui](https://github.com/ocornut/imgui) menu on top of the game.
+
+The hook survives window resize and fullscreen changes, and the DLL can unload itself without closing the process. The same code base builds for x86 and x64.
+
+### DEMO
+https://github.com/adamhlt/D3D11-Hook-ImGui/assets/48086737/5c6cf425-6758-4773-aa1c-9ce4b1c8b41d
+
+## Features
+
+**Hooks**
+- `Present` hook to render the ImGui menu every frame
+- `ResizeBuffers` hook, ImGui and the D3D11 objects are released and created again when the window is resized
+- `SetFullscreenState` hook, same handling when the fullscreen state changes
+- Window procedure hook to forward the inputs to ImGui
+
+**Unload**
+- Press `END` and the DLL removes its hooks and unloads itself
+- Unload from the outside (for example `FreeLibrary` from an injector) is handled too
+- Closing the window removes the hooks before the process terminates
+
+**Menu**
+- Press `INSERT` to show or hide the menu
+- The menu position and size are kept after a resize or a fullscreen change
+- Add your own widgets in `DrawMenu` in `src/Drawing.cpp`
+
+## Usage
+
+1. Build the DLL (see below).
+2. Inject it in a process that uses DirectX 11, with the injector of your choice.
+3. Use `INSERT` to toggle the menu and `END` to unload the DLL.
+
+> **Note**
+> The DLL must have the same architecture as the target process (x86 or x64).
+
+## Build
+
+1. Open `D3D11 Hook ImGui.sln` in Visual Studio (C++17).
+2. Build in Release (x86 or x64).
+
+- **Output:** every configuration is already set up, the DLL is named `D3D11 Hook ImGui.dll`
+- **SDK:** the Windows SDK is enough, the legacy DirectX SDK and the `DXSDK_DIR` variable are no longer needed
+- **Dependencies:** ImGui and MS Detours (headers and x86 / x64 libraries) are included in the repository
+
+## Libraries
+
+- [MS Detours](https://github.com/microsoft/Detours)
 - [ImGui](https://github.com/ocornut/imgui)
 
-## :rocket: Getting Started
+## License
 
-This project use [MS Detours](https://github.com/microsoft/Detours) library for hooking and obviously D3D11 SDK.
-
-MS Detours library is already include in the project folder, but if you don't have DirectX SDK you can download it [here](https://www.microsoft.com/en-us/download/details.aspx?id=6812).
-
-> **Note** <br>
-> Make sure that **DXSDK_DIR** is declared in your environment variables.
-
-To see your environment variables :
-
-> **Settings --> System --> About --> System Advanced Settings --> Environment Variables**
-
-### Visual Studio :
-
-1. Open the solution file (.sln).
-2. Build the project in Release (x86 or x64)
-
-Every configuration in x86 / x64 (Debug and Realese) are already configured with librairies and includes.
-
-## :test_tube: Demonstration :
-
-[Demo](https://github.com/adamhlt/D3D11-Hook-ImGui/assets/48086737/5c6cf425-6758-4773-aa1c-9ce4b1c8b41d)
+This project is licensed under the [GNU GPLv3](LICENSE).
